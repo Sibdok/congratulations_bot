@@ -1,5 +1,7 @@
 import telebot
 from info import *
+from gpt import *
+from register_handlers import *
 import sqlite3
 from datetime import datetime
 import logging
@@ -19,8 +21,8 @@ logging.basicConfig(
 
 
 MAX_USERS = 50
-MAX_TOKENS_FOR_USER = 600
-MAX_TOKENS = 60
+MAX_TOKENS_FOR_USER = 550
+MAX_TOKENS = 120
 
 
 def create_db():
@@ -62,9 +64,8 @@ def is_limit_users():
         return count >= MAX_USERS  
 
 
-
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
-keyboard1.row('Написать открытку🖼️').add("Написать поздравление🎉").add("Написать тост🥂")
+keyboard1.row('Написать открытку🖼️').add("Написать поздравление🎉")
 
 @bot.message_handler(commands=["start"])
 def welcome(message):
@@ -83,7 +84,6 @@ def welcome(message):
     else:
         logging.info(f"Отправлено приветственное сообщение пользователю с id - {user_id}")
         bot.send_message(message.chat.id, "Приветствую, пользователь!", reply_markup=keyboard1)
-        sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
         try:
             sql = "INSERT INTO users_data (user_id, user_name, user_role, tokens, task) VALUES (?, ?, ?, ?, ?);"
             data = (user_id, user_name, "User", 0," ")
@@ -93,11 +93,7 @@ def welcome(message):
         
         except sqlite3.Error as error:
             logging.warning("Ошибка при работе с SQLite", error)
-        
-        
-
     connection.close()
-
 
 @bot.message_handler(commands=["logs"])
 def log_func(message):
@@ -122,6 +118,7 @@ def log_func(message):
         logging.warning("Бот пререгружен")
     connection.close()  
     
+register_handlers(bot)
 
 @bot.message_handler(content_types=["text"])
 def send_text(message):
@@ -145,21 +142,9 @@ def send_text(message):
             except sqlite3.Error as error:
                 logging.warning("Ошибка при работе с SQLite", error)
 
-        elif message.text.lower() == "написать открытку🖼️":
-            logging.info(f"Пользователь с id - {user_id} использовал кнопку 'написать открытку🖼️'")
-            bot.send_message(message.chat.id, "пососакай")
-        elif message.text.lower() == "написать поздравление🎉":
-            logging.info(f"Пользователь с id - {user_id} использовал кнопку 'написать поздравление🎉'")
-            bot.send_message(message.chat.id, "пососакай дважды")
-        elif message.text.lower() == "написать тост🥂":
-            logging.info(f"Пользователь с id - {user_id} использовал кнопку 'написать тост🥂'")
-            bot.send_message(message.chat.id, "пососакай трижды")
         else:
             logging.info(f"Пользователь с id - {user_id} отправил текстовое сообщение - '{message.text}'")
             bot.send_message(message.chat.id, "Используй кнопки для общения с ботом")
-
-
-        
         
     connection.close()  
 
