@@ -12,9 +12,8 @@ bot = telebot.TeleBot(TOKEN)
 
 # iam_token = iam_token
 
-MAX_USERS = 5
-MAX_TOKENS_FOR_USER = 600
-MAX_TOKENS = 60
+MAX_USERS = 50
+MAX_TOKENS = 120
 
 def count_tokens(message):
     user_id = message.from_user.id

@@ -23,8 +23,7 @@ if os.path.isfile("log_file.txt") == False:
 
 
 MAX_USERS = 50
-MAX_TOKENS_FOR_USER = 550
-MAX_TOKENS = 60
+MAX_TOKENS = 120
 
 
 def create_db():
@@ -68,7 +67,7 @@ def is_limit_users():
 
 
 keyboard1 = telebot.types.ReplyKeyboardMarkup(True, True)
-keyboard1.row('Написать открытку🖼️').add("Написать поздравление🎉")
+keyboard1.row('Написать открытку🖼️').add("Написать поздравление🎉").add("Написать тост🥂")
 
 @bot.message_handler(commands=["start"])
 def welcome(message):
