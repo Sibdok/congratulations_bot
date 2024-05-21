@@ -2,3 +2,5 @@ git/
 idea/
 info.py
 __pycache__/
+DATABASE.db
+log_file.txt

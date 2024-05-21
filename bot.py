@@ -2,27 +2,29 @@ import telebot
 from info import *
 from gpt import *
 from register_handlers import *
+from fusion import *
 import sqlite3
 from datetime import datetime
 import logging
 from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
-
+import os.path
 
 
 bot = telebot.TeleBot(TOKEN)
 
-logging.basicConfig(
-    level=logging.INFO,
-    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    filename="log_file.txt",
-    filemode="w",
-    encoding='utf-8',
-)
+if os.path.isfile("log_file.txt") == False:
+    logging.basicConfig(
+        level=logging.INFO,
+        format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+        filename="log_file.txt",
+        filemode="a",
+        encoding='utf-8',
+    )
 
 
 MAX_USERS = 50
 MAX_TOKENS_FOR_USER = 550
-MAX_TOKENS = 120
+MAX_TOKENS = 60
 
 
 def create_db():
@@ -35,6 +37,7 @@ def create_db():
                  'user_name TEXT, ' \
                  'user_role TEXT, ' \
                  'tokens INTEGER, ' \
+                 'request INTEGER, ' \
                  'task TEXT)'
                  )
     cur.execute(sql_query)
@@ -70,7 +73,6 @@ keyboard1.row('Написать открытку🖼️').add("Написать 
 @bot.message_handler(commands=["start"])
 def welcome(message):
     user_id = message.from_user.id
-    user_id = message.from_user.id
     user_name = message.from_user.username
     connection = sqlite3.connect('database.db')
     cur = connection.cursor()
@@ -81,12 +83,13 @@ def welcome(message):
         sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
         cur.execute(sql_query, (" ", user_id))
         connection.commit()
+
     else:
         logging.info(f"Отправлено приветственное сообщение пользователю с id - {user_id}")
         bot.send_message(message.chat.id, "Приветствую, пользователь!", reply_markup=keyboard1)
         try:
-            sql = "INSERT INTO users_data (user_id, user_name, user_role, tokens, task) VALUES (?, ?, ?, ?, ?);"
-            data = (user_id, user_name, "User", 0," ")
+            sql = "INSERT INTO users_data (user_id, user_name, user_role, tokens, request, task) VALUES (?, ?, ?, ?, ?, ?);"
+            data = (user_id, user_name, "User", 0, 0," ")
             cur.execute(sql, data)
             connection.commit()
             logging.info(f"Пользователь с id - {user_id} зарегистрировался в боте как user")
@@ -132,8 +135,8 @@ def send_text(message):
             cur.execute(delite)
             connection.commit()
             try:
-                sql = "INSERT INTO users_data (user_id, user_name, user_role, tokens, task) VALUES (?, ?, ?, ?, ?);"
-                data = (user_id, user_name, "Admin", 0, " ")
+                sql = "INSERT INTO users_data (user_id, user_name, user_role, tokens, request, task) VALUES (?, ?, ?, ?, ?, ?);"
+                data = (user_id, user_name, "Admin", 0, 0, " ")
                 cur.execute(sql, data)
                 connection.commit()
                 bot.send_message(message.chat.id, text="Вы зарегистрировались как admin")

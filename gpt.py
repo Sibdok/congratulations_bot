@@ -5,6 +5,7 @@ import requests
 import sqlite3
 from datetime import datetime
 import logging
+from fusion import *
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -19,12 +20,8 @@ def count_tokens(message):
     user_id = message.from_user.id
     connection = sqlite3.connect('DATABASE.db')
     cur = connection.cursor()
-
-
-
-
     user_data = cur.execute(f'''SELECT * FROM users_data WHERE user_id = {user_id}''').fetchone()
-    task = user_data[5]
+    task = user_data[6]
     
     print(task)
 
@@ -41,18 +38,17 @@ def count_tokens(message):
     }
     tokens = cur.execute(f'''SELECT tokens FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
     int(str(tokens))
+    
+
+
     new_tokens = tokens + len(requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize",json=data, headers=headers).json()['tokens'])
 
     sql_query = "UPDATE users_data SET tokens = ? WHERE user_id = ?;"
     cur.execute(sql_query, (new_tokens, user_id))
     connection.commit()
     tokens = cur.execute(f'''SELECT tokens FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+    ask_gpt(message)
 
-    if tokens > MAX_TOKENS_FOR_USER:
-        logging.info(f"У пользователя с id - {user_id} закончилость доступное кол-во токенов")
-        bot.send_message(message.chat.id, text="У вас закончилость доступное кол-во токенов!")
-    else:
-        ask_gpt(message)
 
 def ask_gpt(message):
     user_id = message.from_user.id
@@ -60,7 +56,7 @@ def ask_gpt(message):
     cur = connection.cursor()
 
     user_data = cur.execute(f'''SELECT * FROM users_data WHERE user_id = {user_id}''').fetchone()
-    task = user_data[5]
+    task = user_data[6]
 
     print(task)
     
@@ -100,9 +96,24 @@ def ask_gpt(message):
         sql_query = "UPDATE users_data SET tokens = ? WHERE user_id = ?;"
         cur.execute(sql_query, (new_tokens, user_id))
 
-        bot.send_message(message.chat.id, text=f"{text}")
+        rec = cur.execute(f'''SELECT request FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
 
+        connection.commit()
+        connection.close()
+
+        if rec == 1:
+            bot.send_message(message.chat.id, text=f"{text}")
+            logging.info(f"Пользователю с id - {user_id} было отправлено поздравление")
+        elif rec == 2 :
+            bot.send_photo(message.chat.id, promt(task), text)
+            logging.info(f"Пользователю с id - {user_id} была отправлена открытка")
+        
+
+
+
+        
         return text
+    
     else:
         logging.warning(RuntimeError(
             'Invalid response received: code: {}, message: {}'.format(
