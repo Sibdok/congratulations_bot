@@ -2,7 +2,6 @@ import sqlite3
 import config
 import logging
 
-print(1)
 class Data:
     def __init__(self):
         self.db_way = config.db_way
@@ -47,12 +46,11 @@ class Data:
             selects += select_column[i] + ','
         selects += select_column[-1]
         for i in range(0, len(elements_conditions) - 1):
-            condition += elements_conditions[i] + '=' + elements_values[i] + ','
-        condition += elements_conditions[-1] + '=' + elements_values[-1]
+            condition += elements_conditions[i] + '=' + str(elements_values[i]) + ','
+        condition += elements_conditions[-1] + '=' + str(elements_values[-1])
         execute = f'SELECT {selects} FROM {self.db_name} WHERE {condition}'
         try:
             result=Data().execute_request(execute=execute, return_value=True)
-            print(result)
             if result is None:
                 return 0
             try:
@@ -76,10 +74,8 @@ class Data:
         if elements_conditions is not None:
             for i in range(0, len(elements_conditions)-1):
                 condition+=elements_conditions[i]+'='+'?'+' AND '
-                print(condition)
             condition+= elements_conditions[-1]+'='+'?'
             execute=f'UPDATE {self.db_name} SET {changing_columns} WHERE {condition};'
-            print(execute)
             Data().execute_request(execute=execute, parametrs=value_column + elements_values)
         else:
             execute = f'UPDATE {self.db_name} SET {changing_columns};'

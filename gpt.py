@@ -18,11 +18,13 @@ MAX_TOKENS = 120
 
 def count_tokens(message):
     user_id = message.from_user.id
-    user_data=Data().select_from_table(['*'], ['user_id'], [str(user_id)])
-    task = user_data[6]
+    user_data=Data().select_from_table(['*'], ['user_id'], [str(user_id)], return_all=True)
+    print(f'{user_data}-----это user data')
+    print('                      ')
+    task = user_data[0][6]
     
     print(task)
-    
+
     token = iam_token
     headers = { # заголовок запроса, в котором передаем IAM-токен
         'Authorization': f'Bearer {token}', # token - наш IAM-токен
@@ -43,8 +45,8 @@ def count_tokens(message):
 def ask_gpt(message):
     user_id = message.from_user.id
 
-    user_data=Data.select_from_table(['*'], ['user_id'], [str(user_id)])
-    task = user_data[6]
+    user_data=Data().select_from_table(['*'], ['user_id'], [str(user_id)], return_all=True)
+    task = user_data[0][6]
 
     print(task)
     

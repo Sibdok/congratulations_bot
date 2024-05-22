@@ -26,12 +26,7 @@ def register_handlers(bot):
         print("name")
         user_id = message.from_user.id
         user_name = message.from_user.username
-        connection = sqlite3.connect('database.db')
-        cur = connection.cursor()
-        sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
-        cur.execute(sql_query, (f"Напиши поздравление для {message.text}", user_id))
-        connection.commit()
-        connection.close()
+        Data().update_in_table(['task'], [f'Напиши поздравление для {message.text}'], ['user_id'], [user_id])
         bot.send_message(message.chat.id, "Напиши с чем ты хочешь его поздравить:")
         bot.register_next_step_handler(message, occasion)
 
@@ -39,16 +34,9 @@ def register_handlers(bot):
         print("occasion")
         user_id = message.from_user.id
         user_name = message.from_user.username
-        connection = sqlite3.connect('database.db')
-        cur = connection.cursor()
-        task = cur.execute(f'''SELECT task FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
-        sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
-        cur.execute(sql_query, (f"{task}. Поздравь его с {message.text}", user_id))
-        connection.commit()
-        sql_query = "UPDATE users_data SET request = ? WHERE user_id = ?;"
-        cur.execute(sql_query, (1, user_id))
-        connection.commit()
-        connection.close()
+        task=Data().select_from_table(['task'], ['user_id'], [str(user_id)])
+        Data().update_in_table(['task'],[f"{task}. Поздравь его с {message.text}"], ['user_id'], [user_id])
+        Data().update_in_table(['request'], [1], ['user_id'], [user_id])
         logging.info(f"Пользователь с id - {user_id} отправил запрос к YaGPT для создания поздравления")
         count_tokens(message)
 
@@ -67,12 +55,7 @@ def register_handlers(bot):
         print("name")
         user_id = message.from_user.id
         user_name = message.from_user.username
-        connection = sqlite3.connect('database.db')
-        cur = connection.cursor()
-        sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
-        cur.execute(sql_query, (f"Напиши поздравление для {message.text}", user_id))
-        connection.commit()
-        connection.close()
+        Data().update_in_table(['task'], [f"Напиши поздравление для {message.text}"], ['user_id'], [user_id])
         bot.send_message(message.chat.id, "Напиши с чем ты хочешь его поздравить:")
         bot.register_next_step_handler(message, occasion_ph)
 
@@ -80,17 +63,20 @@ def register_handlers(bot):
         print("occasion")
         user_id = message.from_user.id
         user_name = message.from_user.username
-        connection = sqlite3.connect('database.db')
+        task=Data().select_from_table(['task'], ['user_id'], [str(user_id)])
+        Data().update_in_table(['task'], [f"{task}. Поздравь его с {message.text}"], ['user_id'], [user_id])
+        Data().update_in_table(['request'], [2], ['user_id'], [user_id])
+        '''connection = sqlite3.connect('database.db')
         cur = connection.cursor()
-        task = cur.execute(f'''SELECT task FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+        task = cur.execute(f'SELECT task FROM users_data WHERE user_id = {user_id}).fetchone()[0]
         sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
         cur.execute(sql_query, (f"{task}. Поздравь его с {message.text}", user_id))
         connection.commit()
-        task = cur.execute(f'''SELECT task FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+        task = cur.execute(f'SELECT task FROM users_data WHERE user_id = {user_id}').fetchone()[0]
         sql_query = "UPDATE users_data SET request = ? WHERE user_id = ?;"
         cur.execute(sql_query, (2, user_id))
         connection.commit()
-        connection.close()
+        connection.close()'''
         logging.info(f"Пользователь с id - {user_id} отправил запрос к YaGPT для создания открытки")
         count_tokens(message)
 
@@ -110,12 +96,13 @@ def register_handlers(bot):
         print("name")
         user_id = message.from_user.id
         user_name = message.from_user.username
-        connection = sqlite3.connect('database.db')
+        Data().update_in_table(['task'], [f"Напиши тост по поводу {message.text}"], ['user_id'], [user_id])
+        '''connection = sqlite3.connect('database.db')
         cur = connection.cursor()
         sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
         cur.execute(sql_query, (f"Напиши тост по поводу {message.text}", user_id))
         connection.commit()
-        connection.close()
+        connection.close()'''
         bot.send_message(message.chat.id, "Напиши для кого будет поздравление:")
         bot.register_next_step_handler(message, occasion_toast)
 
@@ -123,15 +110,18 @@ def register_handlers(bot):
         print("occasion")
         user_id = message.from_user.id
         user_name = message.from_user.username
-        connection = sqlite3.connect('database.db')
+        task=Data().select_from_table(['task'], ['user_id'], [user_id])
+        Data().update_in_table(['task'], [f"{task}. Поздравь {message.text} с этим праздником."], ['user_id'], [user_id])
+        Data().update_in_table(['request'], [1], ['user_id'], [user_id])
+        '''connection = sqlite3.connect('database.db')
         cur = connection.cursor()
-        task = cur.execute(f'''SELECT task FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+        task = cur.execute(f'SELECT task FROM users_data WHERE user_id = {user_id}').fetchone()[0]
         sql_query = "UPDATE users_data SET task = ? WHERE user_id = ?;"
         cur.execute(sql_query, (f"{task}. Поздравь {message.text} с этим праздником.", user_id))
         connection.commit()
         sql_query = "UPDATE users_data SET request = ? WHERE user_id = ?;"
         cur.execute(sql_query, (1, user_id))
         connection.commit()
-        connection.close()
+        connection.close()'''
         logging.info(f"Пользователь с id - {user_id} отправил запрос к YaGPT для создания поздравления")
         count_tokens(message)
