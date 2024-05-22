@@ -1,6 +1,6 @@
 git/
-idea/
+.idea/
 info.py
 __pycache__/
-DATABASE.db
+user_data.db
 log_file.txt

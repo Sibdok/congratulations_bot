@@ -39,7 +39,7 @@ class Data:
         except sqlite3.Error as error:
             logging.warning("Ошибка при работе с SQLite", error)
 
-    def select_from_table(self, select_column: list, elements_conditions: list, elements_values: list):
+    def select_from_table(self, select_column: list, elements_conditions: list, elements_values: list, return_all: bool=False):
         execute = ''
         selects = ''
         condition = ''
@@ -56,7 +56,10 @@ class Data:
             if result is None:
                 return 0
             try:
-                result=result[0][0]
+                if return_all:
+                    return result
+                else:
+                    result=result[0][0]
             except:
                 return 0
             return result

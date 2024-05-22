@@ -6,6 +6,7 @@ import sqlite3
 from datetime import datetime
 import logging
 from fusion import *
+from DataBase import Data
 
 bot = telebot.TeleBot(TOKEN)
 
@@ -17,14 +18,11 @@ MAX_TOKENS = 120
 
 def count_tokens(message):
     user_id = message.from_user.id
-    connection = sqlite3.connect('DATABASE.db')
-    cur = connection.cursor()
-    user_data = cur.execute(f'''SELECT * FROM users_data WHERE user_id = {user_id}''').fetchone()
+    user_data=Data().select_from_table(['*'], ['user_id'], [str(user_id)])
     task = user_data[6]
     
     print(task)
-
-
+    
     token = iam_token
     headers = { # заголовок запроса, в котором передаем IAM-токен
         'Authorization': f'Bearer {token}', # token - наш IAM-токен
@@ -35,26 +33,17 @@ def count_tokens(message):
        "maxTokens": MAX_TOKENS,
        "text": task
     }
-    tokens = cur.execute(f'''SELECT tokens FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+    tokens=Data().select_from_table(['tokens'],['user_id'], [str(user_id)])
     int(str(tokens))
-    
-
-
     new_tokens = tokens + len(requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize",json=data, headers=headers).json()['tokens'])
-
-    sql_query = "UPDATE users_data SET tokens = ? WHERE user_id = ?;"
-    cur.execute(sql_query, (new_tokens, user_id))
-    connection.commit()
-    tokens = cur.execute(f'''SELECT tokens FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+    Data().update_in_table(['tokens'], [new_tokens], ['user_id'], [user_id])
     ask_gpt(message)
 
 
 def ask_gpt(message):
     user_id = message.from_user.id
-    connection = sqlite3.connect('DATABASE.db')
-    cur = connection.cursor()
 
-    user_data = cur.execute(f'''SELECT * FROM users_data WHERE user_id = {user_id}''').fetchone()
+    user_data=Data.select_from_table(['*'], ['user_id'], [str(user_id)])
     task = user_data[6]
 
     print(task)
@@ -86,31 +75,18 @@ def ask_gpt(message):
     # Проверяем, не произошла ли ошибка при запросе
     if response.status_code == 200:
         user_id = message.from_user.id
-        connection = sqlite3.connect('DATABASE.db')
-        cur = connection.cursor()
         text = response.json()["result"]["alternatives"][0]["message"]["text"]
-        
-        tokens = cur.execute(f'''SELECT tokens FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
+        tokens=Data().select_from_table(['tokens'], ['user_id'], [str(user_id)])
         new_tokens = tokens + MAX_TOKENS
-        sql_query = "UPDATE users_data SET tokens = ? WHERE user_id = ?;"
-        cur.execute(sql_query, (new_tokens, user_id))
-
-        rec = cur.execute(f'''SELECT request FROM users_data WHERE user_id = {user_id}''').fetchone()[0]
-
-        connection.commit()
-        connection.close()
+        Data().update_in_table(['tokens'], [new_tokens], ['user_id'], [user_id])
+        rec=Data().select_from_table(['request'], ['user_id'], [str(user_id)])
 
         if rec == 1:
             bot.send_message(message.chat.id, text=f"{text}")
             logging.info(f"Пользователю с id - {user_id} было отправлено поздравление")
-        elif rec == 2 :
+        elif rec == 2:
             bot.send_photo(message.chat.id, promt(task), text)
             logging.info(f"Пользователю с id - {user_id} была отправлена открытка")
-        
-
-
-
-        
         return text
     
     else:
