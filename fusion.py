@@ -68,4 +68,3 @@ class Text2ImageAPI:
 
             attempts -= 1
             time.sleep(delay)
-

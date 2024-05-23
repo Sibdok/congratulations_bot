@@ -13,10 +13,9 @@ import os.path
 
 
 bot = telebot.TeleBot(TOKEN)
-print('я сосал')
 Data().create_table(['id', 'user_id', 'user_name', 'user_role', 'tokens', 'request', 'task'], ['INTEGER PRIMARY KEY', 'INTEGER', 'TEXT', 'TEXT', 'INTEGER', 'INTEGER', 'TEXT'])
 
-if os.path.isfile("log_file.txt") == False:
+if os.path.isfile("log_file.txt") == True:
     logging.basicConfig(
         level=logging.INFO,
         format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
@@ -55,7 +54,7 @@ def welcome(message):
     exist_user=Data().select_from_table(['user_id'], ['user_id'], [str(user_id)])
 
     if exist_user==False:
-        Data().insert_row(['user_id', 'user_name', 'user_role'], [user_id, user_name,'User'])
+        Data().insert_row(['user_id', 'user_name', 'user_role', 'tokens'], [user_id, user_name,'User', 0])
         logging.info(f"Пользователь с id - {user_id} зарегистрировался в боте как user")
     bot.send_message(message.chat.id, "Приветствую, пользователь!", reply_markup=keyboard1)
     logging.info(f"Отправлено приветственное сообщение пользователю с id - {user_id}")
@@ -67,7 +66,6 @@ def log_func(message):
     logging.info(f"Пользователь с id - {user_id} использовал комманду /log")
     user_role = Data().select_from_table(['user_role'], ['user_id'], [str(user_id)])
     if user_role == "Admin":
-        print('я пидорас')
         doc = open('log_file.txt', 'rb')
         bot.send_document(message.chat.id, doc)
         logging.warning(f"Пользователю с id - {user_id} отправлен файл с логами")

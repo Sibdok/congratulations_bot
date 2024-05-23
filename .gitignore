@@ -2,9 +2,9 @@ git/
 .idea/
 idea/
 info.py
+.gitignore
 __pycache__/
-user_data.db
+users_data.db
 log_file.txt
 Key
-users_data.db
 database.db

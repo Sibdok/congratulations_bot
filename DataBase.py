@@ -106,4 +106,3 @@ class Data:
 
 Data().create_table(['id', 'user_id', 'user_name', 'user_role', 'tokens', 'request', 'task'],
                         ['INTEGER PRIMARY KEY', 'INTEGER', 'TEXT', 'TEXT', 'INTEGER', 'INTEGER', 'TEXT'])
-

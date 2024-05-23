@@ -8,7 +8,6 @@ from telebot.types import InlineKeyboardMarkup, InlineKeyboardButton
 from fusion import *
 
 
-
 bot = telebot.TeleBot(TOKEN)
 
 
