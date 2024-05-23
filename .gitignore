@@ -1,7 +1,10 @@
 git/
 .idea/
+idea/
 info.py
 __pycache__/
 user_data.db
 log_file.txt
 Key
+users_data.db
+database.db

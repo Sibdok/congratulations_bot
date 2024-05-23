@@ -8,6 +8,7 @@ import logging
 from fusion import *
 from DataBase import Data
 
+
 bot = telebot.TeleBot(TOKEN)
 
 
@@ -19,15 +20,12 @@ MAX_TOKENS = 120
 def count_tokens(message):
     user_id = message.from_user.id
     user_data=Data().select_from_table(['*'], ['user_id'], [str(user_id)], return_all=True)
-    print(f'{user_data}-----это user data')
-    print('                      ')
     task = user_data[0][6]
     
     print(task)
 
-    token = iam_token
     headers = { # заголовок запроса, в котором передаем IAM-токен
-        'Authorization': f'Bearer {token}', # token - наш IAM-токен
+        'Authorization': f'Bearer {iam_token}', # token - наш IAM-токен
         'Content-Type': 'application/json'
     }
     data = {
@@ -36,7 +34,9 @@ def count_tokens(message):
        "text": task
     }
     tokens=Data().select_from_table(['tokens'],['user_id'], [str(user_id)])
+    print(tokens)
     int(str(tokens))
+    print(len(requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize",json=data, headers=headers).json()['tokens']))
     new_tokens = tokens + len(requests.post("https://llm.api.cloud.yandex.net/foundationModels/v1/tokenize",json=data, headers=headers).json()['tokens'])
     Data().update_in_table(['tokens'], [new_tokens], ['user_id'], [user_id])
     ask_gpt(message)
