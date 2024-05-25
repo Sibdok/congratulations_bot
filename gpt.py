@@ -1,6 +1,6 @@
 import telebot
 from info import *
-# from iam import *
+from iam import *
 import requests
 import sqlite3
 from datetime import datetime
@@ -12,7 +12,6 @@ from DataBase import Data
 bot = telebot.TeleBot(TOKEN)
 
 
-# iam_token = iam_token
 
 MAX_USERS = 50
 MAX_TOKENS = 120
@@ -25,7 +24,7 @@ def count_tokens(message):
     print(task)
 
     headers = { # заголовок запроса, в котором передаем IAM-токен
-        'Authorization': f'Bearer {iam_token}', # token - наш IAM-токен
+        'Authorization': f'Bearer {get_creds()}', # token - наш IAM-токен
         'Content-Type': 'application/json'
     }
     data = {
@@ -51,7 +50,7 @@ def ask_gpt(message):
     print(task)
     
     headers = {
-        'Authorization': f'Bearer {iam_token}',
+        'Authorization': f'Bearer {get_creds()}',
         'Content-Type': 'application/json'
     }
     data = {
