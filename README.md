@@ -1,4 +1,4 @@
-<h1 align='center'>VoiceAssistant</h1>
+<h1 align='center'>Тостер Бот</h1>
 <h2 align='center'>Бот для генерации тостов и поздравлений на Python</h2>
 
 ### Что реализовано
