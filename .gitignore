@@ -3,6 +3,7 @@
 git/
 info.py
 __pycache__/
+config.py
 users_data.db
 log_file.txt
 Key
