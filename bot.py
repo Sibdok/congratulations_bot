@@ -32,7 +32,7 @@ keyboard1.row('Написать открытку🖼️').add("Написать 
 
 def is_limit_users():
         global MAX_USERS
-        connection = sqlite3.connect('database.db')
+        connection = sqlite3.connect('/home/student/congratulations_bot/database.db')
         cursor = connection.cursor()
         result = cursor.execute('SELECT DISTINCT user_id FROM users_data;')
         count = 0 
