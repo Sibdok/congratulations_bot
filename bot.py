@@ -65,7 +65,7 @@ def log_func(message):
     logging.info(f"Пользователь с id - {user_id} использовал комманду /log")
     user_role = Data().select_from_table(['user_role'], ['user_id'], [str(user_id)])
     if user_role == "Admin":
-        doc = open('log_file.txt', 'rb')
+        doc = open('/home/student/congratulations_bot/log_file.txt', 'rb')
         bot.send_document(message.chat.id, doc)
         logging.warning(f"Пользователю с id - {user_id} отправлен файл с логами")
     else:

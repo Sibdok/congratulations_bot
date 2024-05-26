@@ -10,7 +10,7 @@ import logging
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    filename="log_file.txt",
+    filename="/home/student/congratulations_bot/log_file.txt",
     filemode="w",
     encoding='utf-8',
 )
@@ -36,7 +36,7 @@ def create_new_token():
             # добавляем время истечения iam_token к текущему времени
             token_data['expires_at'] = time.time() + token_data['expires_in']
             # записываем iam_token в файл
-            with open("IAM_TOKEN", "w") as token_file:
+            with open("/home/student/congratulations_bot/IAM_TOKEN", "w") as token_file:
                 json.dump(token_data, token_file)
     except Exception as e:
         print(f"Ошибка получения iam_token: {e}")
@@ -45,7 +45,7 @@ def create_new_token():
 def get_creds():
     try:
         # чтение iam_token
-        with open("IAM_TOKEN", 'r') as f:
+        with open("/home/student/congratulations_bot/IAM_TOKEN", 'r') as f:
             file_data = json.load(f)
             expiration = datetime.strptime(file_data["expires_at"][:26], "%Y-%m-%dT%H:%M:%S.%f")
         # если срок годности истёк
@@ -58,7 +58,7 @@ def get_creds():
         create_new_token()
 
     # чтение iam_token
-    with open("IAM_TOKEN", 'r') as f:
+    with open("/home/student/congratulations_bot/IAM_TOKEN", 'r') as f:
         file_data = json.load(f)
         iam_token = file_data["access_token"]
 
