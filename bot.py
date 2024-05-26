@@ -69,7 +69,7 @@ def log_func(message):
         bot.send_document(message.chat.id, doc)
         logging.warning(f"Пользователю с id - {user_id} отправлен файл с логами")
     else:
-        bot.send_message(message.chat.id, text="ливни нахуй с жизни")
+        bot.send_message(message.chat.id, text="У вас недостаточно прав для исполнения этой команды.")
 
     
 register_handlers(bot)
