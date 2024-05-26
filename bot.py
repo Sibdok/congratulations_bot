@@ -18,7 +18,7 @@ Data().create_table(['id', 'user_id', 'user_name', 'user_role', 'tokens', 'reque
 logging.basicConfig(
     level=logging.INFO,
     format="%(asctime)s - %(name)s - %(levelname)s - %(message)s",
-    filename="log_file.txt",
+    filename="/home/student/congratulations_bot/log_file.txt",
     filemode="a",
     encoding='utf-8',
 )
